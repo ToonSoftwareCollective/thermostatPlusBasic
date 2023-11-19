@@ -1,3 +1,5 @@
+2.0.2
+- automatic preparation for ThermostatPlus by installing missing websocket software 
 2.0.1
 - forgot code cleanup during 2.0.0 (like logging and commented sections)
 2.0.0

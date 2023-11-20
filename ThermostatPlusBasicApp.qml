@@ -130,17 +130,7 @@ App { id : app
 
         registry.registerWidget("screen", thermostatPlusBasicSettingsUrl , this, "thermostatPlusBasicSettings");
 
-// The next two lines make you jump to that screen when you click the message on Toon
-//		notifications.registerType("thermostatPlusBasic", notifications.prio_HIGHEST, Qt.resolvedUrl("qrc:/tsc/notification-update.svg"), thermostatPlusBasicControlUrl , {"categoryUrl": thermostatPlusBasicControlUrl }, "thermostatPlusBasic mededelingen");
-//		notifications.registerSubtype("thermostatPlusBasic", "mededeling", thermostatPlusBasicControlUrl , {"categoryUrl": thermostatPlusBasicControlUrl});
-
     }
-
-// ---------------------------------------------------------------------
-
-	function sendNotification(text) {
-		notifications.send("thermostatPlusBasic", "mededeling", false, text, "category=mededeling");
-	}
 
 // ------------------------------------- Actions right after APP startup
 
@@ -181,7 +171,7 @@ App { id : app
 // Master mode needs something to start with in case the 'Slave' is not reached during first getStatus call
         if (mode == 'Master') { currentSetpointInt = 1500 }
         getStatus("All")
-        wssServerSetup("startup")
+
     }
 
 // ---------------------------------------------------------------------
@@ -858,70 +848,4 @@ App { id : app
       return copy
     }
 
-// ---------------------------------------------------------------------
-
-// ----- Voorbereiding voor ThermostatPlus door websockets te installeren
-
-    FileIO {
-        id: tscCommand
-        source: "file:///tmp/tsc.command"
-    }
-
-    function sendtscCommand() {
-        var done = tscCommand.write("external-thermostatPlusBasic")
-    }
-
-    FileIO {
-        id: thermostatPlusVersionFile
-        source: "file:///qmf/qml/apps/thermostatPlus/version.txt"
-    }
-
-    function thermostatPlusVersion() {
-        var version = thermostatPlusVersionFile.read();
-        return version
-    }
-    
-    Timer {
-        id          : updateTimer
-        interval    : 1000 * ( 12 * 60 * 60 )   // interval 12 uur. Herhaling is nodig wanneer het niet lukt om vpn te openen
-        repeat      : true
-        running     : false
-        triggeredOnStart : true
-        onTriggered: { wssServerSetup("update") }
-    }
-
-    function wssServerSetup(action){
-        if (action == "startup") {
-            try {
-                const someModule = Qt.createQmlObject('import QtWebSockets 1.1
-                    WebSocketServer {
-                        id: server
-                        host:"0.0.0.0"  // listen on the network ("127.0.0.1") would be local only
-                        port:8765       // on port 8765
-                        listen:false    // but do not run
-                        onClientConnected: {
-                            webSocket.onTextMessageReceived.connect(function(message) {
-                                log(message)
-                                webSocket.sendTextMessage(message);     // act as echo server
-                            });
-                        }
-                        onErrorStringChanged: {
-                            log(qsTr("WSS Server error: %1").arg(errorString));
-                        }
-                    }
-                    ',parent)
-                if (thermostatPlusVersion() == "") {
-                    sendNotification('Voorbereiding OK. ThermostatPlusBasic kun je vervangen door ThermostatPlus.')
-                } else {
-                    sendNotification('Voorbereiding OK. Verwijder ThermostatPlusBasic en ThermostatPlus werkt.')
-                }
-            } catch (error) {
-                updateTimer.start()
-            }
-        } else {
-            sendNotification('Voorbereiding voor ThermostatPlus wordt gestart.')
-            log("Start QtWebSockets installation");
-            sendtscCommand()
-        }
-    }
 }

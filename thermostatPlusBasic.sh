@@ -12,14 +12,24 @@ log=/qmf/qml/apps/thermostatPlusBasic/thermostatPlusBasic.log
 . /etc/profile
 # function which is called at the end of this script
 do_it () {
+    # My Toon 1 has many apps installed and is slow during startup, especially after a reboot
+    # I think this caused an 'out of resources' in update-rooted.sh -o 
+    # during the update of iptables resulting in a hang of the update-rooted.sh script
+    # This is why I introduced a wait of 5 minutes to avoid this after the reboot.
+    # (I did not have this issue on Toon 2 or after a killall qt-gui)
     echo "---------------------------"
+    date
+    echo " Wait 5 minutes to let startup finish things"
+    sleep 300
     date
     echo " Try to install websockets"
 # make sure we have the latest update-rooted.sh
     cd /root
     echo " ----- Get / update update-rooted.sh"
-    wget https://github.com/ToonSoftwareCollective/update-rooted/blob/main/update-rooted.sh
+    curl --compressed -Nks https://raw.githubusercontent.com/ToonSoftwareCollective/update-rooted/main/update-rooted.sh -o update-rooted.sh
     echo " ----- Open VPN"
+# make sure that in case the update-rooted.sh hangs for some reason we at least kill the vpn within 15 minutes
+    (sleep 900 ; killall openvpn) &
 # try to open vpn
     attempts=0
     # started will be 0 when the vpn is started.
@@ -37,30 +47,39 @@ do_it () {
     then
         /qmf/bin/bxt -d :happ_usermsg -s Notification -n CreateNotification -a type -v tsc -a subType -v notify -a text -v "Negeer de melding(en) dat er iets mis ging." >/dev/null 2>&1
     fi
-# when vpn is open, update package list, install/update websockets, check number of libraries and reboot
     # started will be 0 when the vpn is started.
     if [ $started -eq 0 ]
     then
         echo " ----- Update Package List"
-        opkg update
-        sleep 5
-        echo " ----- Install / Update websocket libraries"
-        opkg install libqt5websockets5
-        sleep 5
-        echo " ----- Check number of websocket libraries"
-        nr_libs=$(opkg list-installed | grep libqt5web | wc -l)
-        if [ $nr_libs -eq 3 ]
+# the next command seems to need something extra on Toon 2 (privileges ?) and I need to use su -c to execute the command
+#        opkg update
+        su -c 'opkg update'
+        nr_errors=$(grep -e 'Signature check failed' $log | wc -l)
+        echo "Status opkg update : $nr_errors"
+        if [ $nr_errors -eq 0 ]
         then
-            echo "Successfully installed / updated websockets."
+            echo " ----- Install / Update websocket libraries"
+# the next command seems to need something extra on Toon 2 (privileges ?) and I need to use su -c to execute the command
+#            opkg install libqt5websockets5
+            su -c 'opkg install libqt5websockets5'
+            nr_errors=$(grep -e 'Cannot install package libqt5websockets5' $log | wc -l)
+            echo "Status opkg install libqt5websockets5 : $nr_errors"
+            if [ $nr_errors -eq 0 ]
+            then
+                echo "Successfully installed / updated websockets."
+                sync
+                sync
+                sleep 5
+                killall qt-gui
+            else
+                echo "Failed to install websockets."
+                /qmf/bin/bxt -d :happ_usermsg -s Notification -n CreateNotification -a type -v tsc -a subType -v notify -a text -v "Verwijderd de meldingen. Binnenkort wordt het updaten opnieuw geprobeerd." >/dev/null 2>&1
+            fi
         else
-            echo "Failed to install websockets."
+            echo "Failed to update opkg packages list."
             /qmf/bin/bxt -d :happ_usermsg -s Notification -n CreateNotification -a type -v tsc -a subType -v notify -a text -v "Verwijderd de meldingen. Binnenkort wordt het updaten opnieuw geprobeerd." >/dev/null 2>&1
         fi
-        # make sure everything is saved before we reboot.
-        sync
-        sync
-        sleep 5
-        init 6
+        killall openvpn
     else
         echo "Failed to open vpn so websockets are not installed."
         /qmf/bin/bxt -d :happ_usermsg -s Notification -n CreateNotification -a type -v tsc -a subType -v notify -a text -v "Verwijderd de meldingen. Binnenkort wordt het updaten opnieuw geprobeerd." >/dev/null 2>&1
@@ -68,4 +87,4 @@ do_it () {
     echo "---------------------------"
 }
 
-do_it > $log
+do_it > $log 2>&1

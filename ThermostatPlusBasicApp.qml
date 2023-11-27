@@ -15,7 +15,7 @@ App { id : app
     property url thermostatPlusBasicSettingsUrl  : "ThermostatPlusBasicSettings.qml"
     property     ThermostatPlusBasicSettings        thermostatPlusBasicSettings
 
-// fill some language tables
+// fill some language tables 
 
     property variant languages      : ["Nederlands", "English", "Deutsch" ]
 

@@ -1,4 +1,4 @@
- #!/bin/sh
+#!/bin/sh
 #
 #   File    : ThermostatPlusBasic.sh
 #   Purpose : Install websocket libraries so ThermostatPlusBasic

@@ -4,7 +4,7 @@ import qb.components 1.0
 Tile {
     id                              : thermostatPlusBasicTile
 
-// ---------------------------------------------------------------------
+// --------------------------------------------------------------------
 
     property bool activeMe          : false
     property int buttonWidth        : isNxt ? 150 : 120
@@ -13,7 +13,7 @@ Tile {
     property string activeColor     : "lightgrey"
     property string hoverColor      : "lightgrey"
     property string selectedColor   : "green"
-    property string halfselectedColor   : "lime" // for program button when programState == 2
+    property string halfselectedColor   : "lime" //  for program button when programState == 2
 
     property int fireHeightBig      : isNxt ? 50 : 40
     property int fireHeightSmall    : fireHeightBig / 2

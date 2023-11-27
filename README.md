@@ -130,7 +130,7 @@ Whe you are on the control screen of the Mirror you can set a new temperature bu
 You will see that on the Control screen. Just set the new temperature 3 times and the Toon in Standard mode will postpone its program.
 After that you can set any temperature and the other Toon will follow that setting.
 
-### View APP data via web access
+### View APP data via web access 
 
 You can use your web browser to access http://your-toon-ip/thermostatPlusVariables.html and see some variables of the app in JSON format like :
 

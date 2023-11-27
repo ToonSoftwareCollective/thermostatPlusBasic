@@ -1,5 +1,5 @@
 2.0.3
-- completed automatic preparation for ThermostatPlus 
+- completed automatic preparation for ThermostatPlus
 2.0.2
 - automatic preparation for ThermostatPlus by installing missing websocket software 
 2.0.1

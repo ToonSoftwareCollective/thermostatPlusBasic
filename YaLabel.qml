@@ -1,4 +1,4 @@
-//////  yaLabel :: Yet Anoter Label by JackV
+//////  yaLabel :: Yet Anoter Label by JackV 
 //////  Based on : 'newTextLabel.qml' MODIFIED BUTTON BY OEPI-LOEPI for TOON
 //////  So many thanks to OEPIE-LOEPI for 'newTextLabel.qml'
 /*

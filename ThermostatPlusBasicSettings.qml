@@ -167,7 +167,7 @@ Screen {
     property bool editting
 
 
-// Programma and Temperatuur function settings
+// Programma and Temperatuur function settings 
 
     property string thermstatFile    : "file:////mnt/data/qmf/config/config_happ_thermstat.xml"
 

@@ -1,17 +1,5 @@
 ### This Toon thermostat app has a Program with a variable number of days and supports 4 different ways to control heating from 1 or more Toons
 
-This is the Basic version of thermostatPlus and needs to be installed when thermostatPlus does not work on your Toon. 
-thermostatPlus needs websockets which are not available on each Toon. 
-This version installs these missing websockets automatically and after installation restarts Toon and sends notifications to the screen explaining that you can replace thermostatPlusBasic by thermostatPlus.
-
-You can also choose to not switch to thermostatPlus but then you will receive a notification after each restart of Toon.
-
-Consider to switch to thermostatPlus because
-<br>thermostatPlus offers the same as thermostatPlusBasic + a web interface which looks just like the controls of thermostatPlusBasic on Toon. 
-This enables you to control your Toon from a web browser on your phone. 
-Information on how to access Toon and optionally configure internet access is in the setup pages of thermostatPlus.
-The web page is protected by username and password as you enter in the settings of Toon.
-
 The 4 modes of this app :
  - Standard : like the large thermostat function plus other functions.
  - Mirror   : control the same heating with more Toons.
